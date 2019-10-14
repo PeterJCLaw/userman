@@ -1,4 +1,7 @@
 #!/bin/env python
+
+from __future__ import print_function
+
 import smtplib, getpass
 import sr, os
 from config import config
@@ -31,12 +34,12 @@ def email( fromaddr, toaddr, subject, msg, smtp_pass = None ):
     server.ehlo()
     server.login(config.get('mailer', 'username'), smtp_pass)
 
-    print "Emailing...",
+    print("Emailing...", end=' ')
     r = server.sendmail(fromaddr, toaddr, msg)
     if len(r):
-        print " FAILED."
+        print(" FAILED.")
     else:
-        print " OK."
+        print(" OK.")
 
     try:
         server.quit()
@@ -63,7 +66,7 @@ def send_template( template_name, user, extravars = [] ):
           "EMAIL": user.email }
     v.update(extravars)
 
-    for vname, val in v.iteritems():
+    for vname, val in v.items():
         msg = msg.replace( "$%s" % vname, val )
 
     email( config.get('mailer', 'fromaddr'), user.email, subject, msg, None )

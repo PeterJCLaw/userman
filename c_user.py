@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sr, sys
 import getpass
 import mailer
@@ -41,18 +43,18 @@ class user:
 
             self.commands[cmd](args)
         else:
-            print self.__doc__
+            print(self.__doc__)
 
     def _get_user(self, username, match_case = True):
         return sr.users.user(username, match_case)
 
     def help(self, args):
         if len(args) < 1:
-            print self.__doc__
+            print(self.__doc__)
             return
 
         if args[0] in self.commands:
-            print self.commands[args[0]].__doc__
+            print(self.commands[args[0]].__doc__)
 
         sys.exit(0)
 
@@ -62,14 +64,14 @@ Usage:
 	user add USERNAME FIRST_NAME LAST_NAME EMAIL"""
 
         if len(args) < 4:
-            print self.add.__doc__
+            print(self.add.__doc__)
             return
 
         # Avoid creating multiple users with similar names
         u = self._get_user( args[0], match_case = False )
 
         if u.in_db:
-            print "User '%s' already exists" % ( u.username )
+            print("User '%s' already exists" % ( u.username ))
             return
 
         u.cname = args[1]
@@ -77,24 +79,24 @@ Usage:
         u.email = args[3]
 
         if u.save():
-            print "User '%s' successfully created." % (args[0])
+            print("User '%s' successfully created." % (args[0]))
         else:
-            print "Failed to create user '%s'"
+            print("Failed to create user '%s'")
 
     def list(self, args):
         """List all users"""
         if len(args) > 0:
-            print self.list.__doc__
+            print(self.list.__doc__)
             return
 
-        print " ".join(sr.users.list())
+        print(" ".join(sr.users.list()))
 
     def delete(self, args):
         """Delete a user.
 Usage:
 	user rm USERNAME(S)"""
         if len(args) < 1:
-            print self.delete.__doc__
+            print(self.delete.__doc__)
             return
 
         for username in args:
@@ -102,11 +104,11 @@ Usage:
             groups = u.groups()
 
             if not u.in_db:
-                print "User '%s' doesn't exist" % ( username )
+                print("User '%s' doesn't exist" % ( username ))
                 continue
 
             if u.delete():
-                print "User '%s' deleted" % (username)
+                print("User '%s' deleted" % (username))
 
                 for group in groups:
                     g = sr.group(group)
@@ -114,7 +116,7 @@ Usage:
                     g.save()
 
             else:
-                print "Error: User '%s' could not be deleted"
+                print("Error: User '%s' could not be deleted")
 
     def info(self, args):
         """Print information about a user.
@@ -122,15 +124,15 @@ Usage:
 	user info USERNAME"""
 
         if len(args) < 1:
-            print self.info.__doc__
+            print(self.info.__doc__)
             return
 
         u = self._get_user( args[0] )
 
         if not u.in_db:
-            print "User '%s' not found\n" % (args[0])
+            print("User '%s' not found\n" % (args[0]))
         else:
-            print u
+            print(u)
 
     def auto(self, args):
         """Automate user creation:
@@ -142,14 +144,14 @@ Usage:
 	user auto USERNAME FIRST_NAME LAST_NAME EMAIL [LANG]
 """
         if len(args) < 4:
-            print self.auto.__doc__
+            print(self.auto.__doc__)
             return
 
         # Avoid creating multiple users with similar names
         u = self._get_user( args[0], match_case = False )
 
         if u.in_db:
-            print "User '%s' already exists" % (args[0] )
+            print("User '%s' already exists" % (args[0] ))
             return
 
         u.cname = args[1]
@@ -166,7 +168,7 @@ Usage:
             u.set_lang( "english" )
 
         mailer.send_template( "welcome", u, { "PASSWORD": u.init_passwd } )
-        print "User '%s' created and mailed." % (args[0])
+        print("User '%s' created and mailed." % (args[0]))
 
     def passwd(self,args):
         """Set the user password.
@@ -175,7 +177,7 @@ Usage:
 """
 
         if len(args) < 1:
-            print self.passwd.__doc__
+            print(self.passwd.__doc__)
             return
 
         uname = args[0]
@@ -183,13 +185,13 @@ Usage:
         u = self._get_user( uname )
 
         if not u.in_db:
-            print "User '%s' not found\n" % ( uname )
+            print("User '%s' not found\n" % ( uname ))
             return
 
         if u.set_passwd( new = getpass.getpass("New password:") ):
-            print "Password set"
+            print("Password set")
         else:
-            print "Failed to set password"
+            print("Failed to set password")
 
 
     def rand_pass(self, args):
@@ -198,14 +200,14 @@ Usage:
 	user rand_pass USERNAME"""
 
         if len(args) < 1:
-            print self.rand_pass.__doc__
+            print(self.rand_pass.__doc__)
             return
 
         uname = args[0]
         u = self._get_user( uname )
 
         if not u.in_db:
-            print "User '%s' not found\n" % ( uname )
+            print("User '%s' not found\n" % ( uname ))
             return False
 
         new_passwd = sr.users.GenPasswd()
@@ -219,7 +221,7 @@ Usage:
 	user groups USERNAME"""
 
         if len(args) < 1:
-            print self.groups.__doc__
+            print(self.groups.__doc__)
             return
 
         uname = args[0]
@@ -227,12 +229,11 @@ Usage:
         u = self._get_user( uname )
 
         if not u.in_db:
-            print "User '%s' not found\n" % ( uname )
+            print("User '%s' not found\n" % ( uname ))
         else:
             groups = u.groups()
 
             if len(groups) == 0:
-                print "'%s' is not in any groups." % (uname)
+                print("'%s' is not in any groups." % (uname))
             else:
-                print " ".join(groups)
-
+                print(" ".join(groups))

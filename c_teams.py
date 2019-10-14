@@ -1,4 +1,7 @@
 #!/bin/env python
+
+from __future__ import print_function
+
 import os, sys, csv, sr, re
 import mailer
 
@@ -6,6 +9,11 @@ TEAM_PREFIX = sr.TEAM_PREFIX
 TEAM_PATTERN = "^%s[0-9A-Z]+$" % TEAM_PREFIX
 COLLEGE_PREFIX = sr.COLLEGE_PREFIX
 COLLEGE_PATTERN = "^%s[0-9A-Z]+$" % COLLEGE_PREFIX
+
+try:
+    input = raw_input
+except NameError:
+    pass
 
 def get_team(tid):
     return sr.group( TEAM_PREFIX + str(tid) )
@@ -44,11 +52,11 @@ def college_find( numsub ):
 
     if len(cols) > 1:
         # TODO: prompt the user
-        print "\"%s\" matches more than one college." % numsub
+        print("\"%s\" matches more than one college." % numsub)
         sys.exit(1)
 
     if len(cols) == 0:
-        print "\"%s\" matches no colleges." % numsub
+        print("\"%s\" matches no colleges." % numsub)
         sys.exit(1)
 
     return cols[0]
@@ -83,16 +91,16 @@ class CmdBase:
         abort = False
 
         if hasattr(self, "min_args") and len(args) < self.min_args:
-            print "Too few arguments to command."
+            print("Too few arguments to command.")
             abort = True
 
         if hasattr(self, "max_args") and len(args) > self.max_args:
-            print "Too many arguments to command"
+            print("Too many arguments to command")
             abort = True
 
         if abort:
             if hasattr(self, "usage"):
-                print "Usage: %s" % self.usage
+                print("Usage: %s" % self.usage)
             sys.exit(1)
 
 class CmdList(CmdBase):
@@ -116,7 +124,7 @@ class CmdTeamList(CmdList):
         names = self.get_names(TEAM_PREFIX, TEAM_PATTERN)
 
         for gname in names:
-            print gname
+            print(gname)
 
 class CmdTeamCreateCSV(CmdBase):
     desc = "Create a new team from a CSV file"
@@ -130,8 +138,8 @@ class CmdTeamCreateCSV(CmdBase):
         college_group = college_find( CDESC )
         newusers = self.form_new_users( CSV_FNAME, college_group )
 
-        print
-        print "Will create %i users" % len(newusers)
+        print()
+        print("Will create %i users" % len(newusers))
 
         disp = [["username", "fname", "lname", "email"]]
         disp += [ [u.username, u.cname, u.sname, u.email] for u in newusers ]
@@ -153,22 +161,22 @@ class CmdTeamCreateCSV(CmdBase):
         if teamno == None:
             teamno = new_team()
 
-        print
-        print "They will form team %i." % teamno
-        print "And will be associated with %s: %s." % ( college_group.name, college_group.desc )
+        print()
+        print("They will form team %i." % teamno)
+        print("And will be associated with %s: %s." % ( college_group.name, college_group.desc ))
 
         students_group = sr.group("students")
         team_group = get_team(teamno)
 
-        print "Is this OK? (yes/no)",
-        resp = raw_input()
+        print("Is this OK? (yes/no)", end=' ')
+        resp = input()
         resp = resp.lower().strip()
 
         if resp == "yes":
-            print "Creating users..."
+            print("Creating users...")
 
             for u in newusers:
-                print "\t", u.username
+                print("\t", u.username)
                 passwd = sr.users.GenPasswd()
                 # Password has to be set after user is in db
                 u.save()
@@ -176,7 +184,7 @@ class CmdTeamCreateCSV(CmdBase):
                 u.set_lang( lang )
                 mailer.send_template( "welcome", u, { "PASSWORD": passwd } )
 
-            print "Saving groups."
+            print("Saving groups.")
             for g in students_group, team_group, college_group:
                 g.user_add(newusers)
                 g.save()
@@ -261,7 +269,7 @@ class CmdTeamCreateCSV(CmdBase):
                 except IndexError:
                     pass
 
-            for field, fn in score_funcs.iteritems():
+            for field, fn in score_funcs.items():
                 scores[colnum][field] += fn(col)
 
         for colname in cols.keys():
@@ -269,18 +277,18 @@ class CmdTeamCreateCSV(CmdBase):
             cols[colname] = self.find_max_score(colscores)[0]
 
         while True:
-            print "*" * 40
-            print "Column arrangement:"
-            print cols
+            print("*" * 40)
+            print("Column arrangement:")
+            print(cols)
 
-            print
-            print " y = yes, create this team."
-            print " change COLNAME colnum"
-            print " q = quit this utility"
-            print " e = show an example line"
-            print "Command:",
+            print()
+            print(" y = yes, create this team.")
+            print(" change COLNAME colnum")
+            print(" q = quit this utility")
+            print(" e = show an example line")
+            print("Command:", end=' ')
 
-            resp = raw_input()
+            resp = input()
             if len(resp) == 0:
                 continue
 
@@ -291,20 +299,20 @@ class CmdTeamCreateCSV(CmdBase):
                 sys.exit(1)
 
             if resp == "e":
-                print rows[0]
+                print(rows[0])
                 continue
 
             ss = resp.split()
             if ss[0] == "change":
                 if len(ss) < 3:
-                    print "Please specify a column name and number"
+                    print("Please specify a column name and number")
                     continue
                 colname, num = ss[1], int(ss[2])
-                if not cols.has_key(colname):
-                    print "Invalid field name \"%s\"." % colname
+                if colname not in cols:
+                    print("Invalid field name \"%s\"." % colname)
                     continue
                 if num >= max_cols or num < 0:
-                    print "Invalid column number."
+                    print("Invalid column number.")
                     continue
 
                 cols[colname] = num
@@ -343,7 +351,7 @@ class CmdTeamInfo(CmdBase):
         tid = args[0]
         tg = get_team(tid)
         if not tg.in_db:
-            print "Team '%s' do not exist" % tid
+            print("Team '%s' do not exist" % tid)
             sys.exit(1)
 
         # Group people into teachers, students, mentors and misc:
@@ -356,23 +364,23 @@ class CmdTeamInfo(CmdBase):
             team_grouped[gname] = []
 
         for uname in tg.members:
-            for gname, g in groups.iteritems():
+            for gname, g in groups.items():
                 if uname in g.members:
                     team_grouped[gname].append(uname)
 
-        print "Team", tid
-        print
+        print("Team", tid)
+        print()
 
-        for status, ulist in team_grouped.iteritems():
+        for status, ulist in team_grouped.items():
             if len(ulist):
-                print len(ulist), "%s:" % status
+                print(len(ulist), "%s:" % status)
                 ulist.sort()
 
                 for u in ulist:
-                    print "\t%s" % u
-                print
+                    print("\t%s" % u)
+                print()
             else:
-                print "No %s." % status
+                print("No %s." % status)
 
         # Work out what college they're from
         college_gnames = set()
@@ -388,11 +396,11 @@ class CmdTeamInfo(CmdBase):
         college_gnames = list(college_gnames)
         college_gnames.sort()
         if len(college_gnames):
-            print "Colleges:"
+            print("Colleges:")
             for gname in college_gnames:
-                print  "\t%s" % gname
+                print("\t%s" % gname)
         else:
-            print "No associated college."
+            print("No associated college.")
 
 class CmdCollegeList(CmdList):
     desc = "List colleges"
@@ -410,7 +418,7 @@ class CmdCollegeList(CmdList):
             else:
                 desc = "(no description)"
 
-            print "%s: %s" % (gname, desc)
+            print("%s: %s" % (gname, desc))
 
 class CmdCollegeInfo(CmdBase):
     desc = "Show information about a college"
@@ -421,7 +429,7 @@ class CmdCollegeInfo(CmdBase):
         CmdBase.__init__(self, args)
         CDESC = args[0]
         college = college_find( CDESC )
-        print "%s: %s" % (college.name , college.desc)
+        print("%s: %s" % (college.name , college.desc))
 
         teams = set()
 
@@ -432,9 +440,9 @@ class CmdCollegeInfo(CmdBase):
                 if re.match( TEAM_PATTERN, g ) != None:
                     teams.add(g)
 
-        print "Teams:"
+        print("Teams:")
         for team in teams:
-            print "\t -", team
+            print("\t -", team)
 
 class CmdCollegeCreate(CmdBase):
     desc = "Create a new college"
@@ -449,7 +457,7 @@ class CmdCollegeCreate(CmdBase):
         g.desc = desc
         g.save()
 
-        print "Created college group \"%s\"" % g.name
+        print("Created college group \"%s\"" % g.name)
 
     def next_free_college(self):
         i = 1
@@ -469,14 +477,14 @@ class CmdTeams:
     def __init__(self, args):
         if len(args) < 1 or args[0] not in self.cmds:
             if len(args):
-                print "Invalid command"
+                print("Invalid command")
             else:
-                print "Manage teams.\n"
+                print("Manage teams.\n")
 
-            print "Valid subcommands:"
+            print("Valid subcommands:")
 
-            for cmd_name, cmdf in self.cmds.iteritems():
-                print "     - %s: %s" % ( cmd_name, cmdf.desc )
+            for cmd_name, cmdf in self.cmds.items():
+                print("     - %s: %s" % ( cmd_name, cmdf.desc ))
             sys.exit(1)
 
         self.cmds[args[0]](args[1:])
@@ -490,12 +498,12 @@ class CmdColleges:
     def __init__(self, args):
         if len(args) < 1 or args[0] not in self.cmds:
             if len(args):
-                print "Invalid command"
+                print("Invalid command")
             else:
-                print "Manage college groups.\n"
-            print "Valid subcommands:"
-            for cmd_name, cmdf in self.cmds.iteritems():
-                print "     - %s: %s" % ( cmd_name, cmdf.desc )
+                print("Manage college groups.\n")
+            print("Valid subcommands:")
+            for cmd_name, cmdf in self.cmds.items():
+                print("     - %s: %s" % ( cmd_name, cmdf.desc ))
             sys.exit(1)
 
         self.cmds[args[0]](args[1:])

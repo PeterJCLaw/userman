@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+from __future__ import print_function
+
 import sys, getpass
 import c_user, c_group, c_search, c_teams
 
@@ -9,15 +12,15 @@ commands = { "college": c_teams.CmdColleges,
              "user": c_user.user }
 
 def usage():
-    print """Usage:
+    print("""Usage:
     %s command command_args
 
-    Where command is one of:""" % sys.argv[0]
+    Where command is one of:""" % sys.argv[0])
 
     for c in commands.keys():
-        print "\t%s" % c
+        print("\t%s" % c)
 
-    print """Type %s COMMAND help to get more information.""" % sys.argv[0]
+    print("""Type %s COMMAND help to get more information.""" % sys.argv[0])
 
 def c_help(args):
     global commands
@@ -27,7 +30,7 @@ def c_help(args):
         return
 
     if args[0] in commands:
-        print commands[args[0]].__doc__
+        print(commands[args[0]].__doc__)
 
     sys.exit(0)
 
@@ -37,7 +40,7 @@ def exec_cmd(args):
     if cmd in commands.keys():
         commands[cmd]( args[1:] )
     else:
-        print "Invalid command."
+        print("Invalid command.")
         usage()
 
 if len(sys.argv) < 2:

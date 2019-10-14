@@ -59,5 +59,5 @@ def create_all(team_source):
 
 if __name__ == '__main__':
     passwds_map = create_all(get_teams())
-    for u, p in passwds_map.iteritems():
-        print u, p
+    for u, p in passwds_map.items():
+        print(u, p)

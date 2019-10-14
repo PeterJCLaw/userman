@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import sys
 
@@ -28,13 +29,13 @@ class CmdSearch(object):
 
     def help(self, args):
         if len(args) < 1 or args[0] == 'help':
-            print self.__doc__
+            print(self.__doc__)
             return
 
         if args[0] in self.commands:
-            print """Find a user by their {0}.
+            print("""Find a user by their {0}.
 Usage:
-	search email {1}""".format(*self.commands[args[0]][1:])
+	search email {1}""".format(*self.commands[args[0]][1:]))
 
         sys.exit(0)
 
@@ -44,7 +45,7 @@ Usage:
         userids = sr.users.user.search(**kwargs)
 
         if len(userids) == 0:
-            print "No matches."
+            print("No matches.")
         else:
-            print "Found {0} users:".format(len(userids))
-            print "\n".join(userids)
+            print("Found {0} users:".format(len(userids)))
+            print("\n".join(userids))

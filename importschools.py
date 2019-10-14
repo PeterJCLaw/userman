@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # By Alex Monk, based on importusers.py by Jeremy Morse
 
+from __future__ import print_function
+
 import argparse
 import os
 import re
@@ -27,7 +29,7 @@ teams_dir = args.teamsdir
 try:
     os.stat(teams_dir)
 except OSError:
-    print >>sys.stderr, "Couldn't stat \"{0}\"".format(teams_dir)
+    print("Couldn't stat \"{0}\"".format(teams_dir), file=sys.stderr)
     sys.exit(1)
 
 # Suck a list of teams out of teams_dir
@@ -50,7 +52,7 @@ def is_taking_part_yaml(fname):
 
         return True
     # On failure
-    print >>sys.stderr, "Couldn't open {0}".format(fname)
+    print("Couldn't open {0}".format(fname), file=sys.stderr)
     sys.exit(1)
 
 team_yaml = [x for x in team_yaml if is_taking_part_yaml(x)]
@@ -63,19 +65,19 @@ def read_team_data(fname):
         y = yaml.safe_load(fobj)
 
         if 'contacts' not in y or len(y['contacts']) == 0:
-            print >>sys.stderr, "No contacts record for {0}".format(fname)
+            print("No contacts record for {0}".format(fname), file=sys.stderr)
             sys.exit(1)
         the_contact = y['contacts'][0] # Pick the first contact
         if 'email' not in the_contact or 'name' not in the_contact:
-            print >>sys.stderr,"Incomplete contact record for {0}".format(fname)
+            print("Incomplete contact record for {0}".format(fname), file=sys.stderr)
             sys.exit(1)
 
         if 'teams' not in y or len(y['teams']) == 0:
-            print >>sys.stderr, "No teams record for {0}".format(fname)
+            print("No teams record for {0}".format(fname), file=sys.stderr)
             sys.exit(1)
 
         if 'name' not in y:
-            print >>sys.stderr, "No school name record for {0}".format(fname)
+            print("No school name record for {0}".format(fname), file=sys.stderr)
             sys.exit(1)
 
         teams = []
@@ -85,7 +87,7 @@ def read_team_data(fname):
 
         # First team name gets used as the college name too...
         if re.match("^[A-Z]+$", teams[0]) == None:
-            print >>sys.stderr, "Team name \"{0}\" is not the conventional format".format(teams[0])
+            print("Team name \"{0}\" is not the conventional format".format(teams[0]), file=sys.stderr)
             sys.exit(1)
 
         return (the_contact, teams[0], teams, y['name'])
@@ -94,7 +96,7 @@ def read_team_data(fname):
 
 teachers = sr.group('teachers')
 if not teachers.in_db:
-    print >>sys.stderr, "Group {0} doesn't exist".format('teachers')
+    print("Group {0} doesn't exist".format('teachers'), file=sys.stderr)
     sys.exit(1)
 
 # Iterate through teams, fetch data, and create accounts.
@@ -115,11 +117,11 @@ for team_dot_yaml in team_yaml:
         teamGroups.append(teamGroup)
 
     if college.in_db or len([x for x in teamGroups if x.in_db]) != 0:
-        print >>sys.stderr, "College {0} or associated teams already in db, skipping import".format(college_tla)
+        print("College {0} or associated teams already in db, skipping import".format(college_tla), file=sys.stderr)
         skipped += 1
         continue
 
-    print >>sys.stderr, "Creating groups + account for {0}".format(college_tla)
+    print("Creating groups + account for {0}".format(college_tla), file=sys.stderr)
 
     # Split at most once -- assume additional name parts go in the last name
     first_name, last_name = team_leader['name'].split(' ', 1)
@@ -144,12 +146,12 @@ for team_dot_yaml in team_yaml:
     teachers.user_add(u)
     teachers.save()
 
-    print "User {0} created".format(newname)
+    print("User {0} created".format(newname))
 
     if not args.no_emails:
         mailer.send_template("teacher_welcome", u, { "PASSWORD": u.init_passwd } )
-        print "User {0} mailed".format(newname)
+        print("User {0} mailed".format(newname))
 
     count += 1
 
-print >>sys.stderr, "Created {0} teams and skipped {1} more".format(count, skipped)
+print("Created {0} teams and skipped {1} more".format(count, skipped), file=sys.stderr)

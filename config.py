@@ -1,5 +1,4 @@
-
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 import os.path
 
 config = None
