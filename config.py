@@ -1,4 +1,10 @@
-from configparser import SafeConfigParser
+try:
+    # Python 2
+    from ConfigParser import SafeConfigParser
+except ImportError:
+    # Python 3
+    from configparser import SafeConfigParser
+
 import os.path
 
 config = None
