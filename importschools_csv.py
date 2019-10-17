@@ -67,7 +67,7 @@ count = 0
 skipped = 0
 
 for info in teams_infos:
-    college_tla = info['tla'].strip()
+    college_tla = info['tla'].strip().upper()
     org_name = info['organisation_name'].strip()
     first_name = info['first_name'].strip()
     last_name = info['last_name'].strip()
