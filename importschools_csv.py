@@ -54,6 +54,13 @@ for line_no, info in enumerate(csv.DictReader(args.csv_file), start=1):
     for col in REQUIRED_COLUMNS:
         if not info.get(col):
             errors.append("Line {} is missing a {}".format(line_no, col))
+
+    if len(info['tla']) != 3 or not info['tla'].isalpha():
+        errors.append("Invalid TLA {!r} on line {}".format(info['tla'], line_no))
+
+    if '@' not in info['email']:
+        errors.append("Invalid email {!r} on line {}".format(info['email'], line_no))
+
     teams_infos.append(info)
 
 if errors:
