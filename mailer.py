@@ -23,6 +23,9 @@ def get_pass():
     return the_pass
 
 def email( fromaddr, toaddr, subject, msg, smtp_pass = None ):
+    if smtp_pass == None and config.has_option('mailer', 'password'):
+        smtp_pass = config.get('mailer', 'password')
+
     if smtp_pass == None:
         smtp_pass = get_pass()
 
