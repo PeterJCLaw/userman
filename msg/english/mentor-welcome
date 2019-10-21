@@ -1,0 +1,26 @@
+Subject: Welcome to Student Robotics
+Hello $NAME,
+
+You now have a shiny new Student Robotics mentor account. This will let you
+access the Student Robotics facilities used by the teams, including the forums
+and the IDE.
+
+Your username is: $USERNAME
+Your password is: $PASSWORD
+
+Your registered email address is $EMAIL.
+
+To manage your account details or password, please visit the user management page:
+
+        https://studentrobotics.org/userman
+
+The documentation for which is at the bottom of this page:
+
+        https://studentrobotics.org/docs/team_admin/user_accounts
+
+If you have any problems with your account then please get in touch by
+emailing accounts@studentrobotics.org.
+
+Thanks,
+
+The Student Robotics Team
