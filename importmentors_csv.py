@@ -66,7 +66,7 @@ for info in mentors_infos:
     last_name = info['last_name'].strip()
     email = info['email'].strip()
 
-    username = (first_name[0] + last_name).lower()
+    username = (first_name[0] + last_name).replace(' ', '').lower()
 
     u = sr.users.user(username)
 
