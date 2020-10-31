@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # By Alex Monk, based on importusers.py by Jeremy Morse
 
 from __future__ import print_function
